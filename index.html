@@ -1,0 +1,58 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Breakeven CPA Calculator</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; }
+    h2 { color: #333; }
+    label { display: block; margin-top: 10px; }
+    input { padding: 5px; width: 200px; }
+    button { margin-top: 15px; padding: 10px 20px; background: #333; color: white; border: none; cursor: pointer; }
+    .output { margin-top: 20px; background: #fff; padding: 15px; border-radius: 5px; }
+  </style>
+</head>
+<body>
+  <h2>Breakeven CPA Calculator</h2>
+
+  <label>AOV (₹): <input type="number" id="aov" value="430.76"></label>
+  <label>Product Cost (₹): <input type="number" id="productCost" value="40"></label>
+  <label>Shipping Cost (₹): <input type="number" id="shippingCost" value="77"></label>
+  <label>Delivery Rate (%): <input type="number" id="deliveryRate" value="80"></label>
+  <label>GST on Ads (%): <input type="number" id="gstRate" value="18"></label>
+
+  <button onclick="calculateCPA()">Calculate</button>
+
+  <div class="output" id="output"></div>
+
+  <script>
+    function calculateCPA() {
+      const aov = parseFloat(document.getElementById('aov').value);
+      const productCost = parseFloat(document.getElementById('productCost').value);
+      const shippingCost = parseFloat(document.getElementById('shippingCost').value);
+      const deliveryRate = parseFloat(document.getElementById('deliveryRate').value) / 100;
+      const gstRate = parseFloat(document.getElementById('gstRate').value) / 100;
+      const rtoRate = 1 - deliveryRate;
+
+      const breakevenCPA_wo_rto = (aov - (productCost + shippingCost)) / (1 + gstRate);
+      const breakevenCPA_wo_rto_incl_gst = breakevenCPA_wo_rto * (1 + gstRate);
+
+      const numerator = aov - rtoRate * (productCost + shippingCost);
+      const breakevenCPA_with_rto = (numerator / deliveryRate - (productCost + shippingCost)) / (1 + gstRate);
+      const breakevenCPA_with_rto_incl_gst = breakevenCPA_with_rto * (1 + gstRate);
+
+      const output = `
+        <strong>Breakeven CPA (Excl. GST):</strong><br>
+        Without RTO: ₹${breakevenCPA_wo_rto.toFixed(2)}<br>
+        With RTO (CPA on delivered orders only): ₹${breakevenCPA_with_rto.toFixed(2)}<br><br>
+        <strong>Breakeven CPA (Incl. GST):</strong><br>
+        Without RTO: ₹${breakevenCPA_wo_rto_incl_gst.toFixed(2)}<br>
+        With RTO (CPA on delivered orders only): ₹${breakevenCPA_with_rto_incl_gst.toFixed(2)}
+      `;
+
+      document.getElementById('output').innerHTML = output;
+    }
+  </script>
+</body>
+</html>
