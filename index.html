@@ -3,53 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Profitability Calculator (India D2C)</title>
+  <title>Nick Arora's Profitability Calculator (India D2C)</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 600px;
-      margin: 40px auto;
-      line-height: 1.5;
-    }
-    h1 {
-      font-size: 1.5em;
-      margin-bottom: 20px;
-    }
-    label {
-      display: block;
-      margin-bottom: 10px;
-    }
-    input[type="number"] {
-      width: 100%;
-      padding: 6px;
-      box-sizing: border-box;
-    }
-    .flex-row {
-      display: flex;
-      gap: 16px;
-    }
-    .flex-item {
-      flex: 1;
-    }
-    button {
-      margin-top: 20px;
-      padding: 10px 20px;
-      font-size: 1em;
-      cursor: pointer;
-    }
-    #result {
-      margin-top: 20px;
-      padding: 12px;
-      background-color: #e6ffe6;
-      border-radius: 4px;
-      font-weight: bold;
-      white-space: pre-line;
-    }
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; line-height: 1.5; }
+    h1 { font-size: 1.5em; margin-bottom: 20px; }
+    label { display: block; margin-bottom: 10px; }
+    input[type="number"] { width: 100%; padding: 6px; box-sizing: border-box; }
+    .flex-row { display: flex; gap: 16px; }
+    .flex-item { flex: 1; }
+    button { margin-top: 20px; padding: 10px 20px; font-size: 1em; cursor: pointer; }
+    #result { margin-top: 20px; padding: 12px; background-color: #e6ffe6; border-radius: 4px; font-weight: bold; white-space: pre-line; }
   </style>
 </head>
 <body>
 
-  <h1>Profitability Calculator (India D2C)</h1>
+  <h1>Nick Arora's Profitability Calculator (India D2C)</h1>
 
   <!-- Inputs -->
   <div class="flex-row">
@@ -105,7 +73,6 @@
 
   <script>
     document.getElementById('calcBtn').addEventListener('click', function() {
-      // Read inputs
       var aov = parseFloat(document.getElementById('aov').value) || 0;
       var dr = (parseFloat(document.getElementById('deliveryRate').value) || 0) / 100;
       var rtoCost = parseFloat(document.getElementById('rtoCost').value) || 0;
@@ -116,46 +83,37 @@
       var inputGst = (parseFloat(document.getElementById('inputGst').value) || 0) / 100;
       var orderCount = parseFloat(document.getElementById('orderCount').value) || 0;
 
-      // Core calculations per order
       var deliveredRev = aov * dr;
       var prodCostDelivered = prodCost * dr;
       var shipCostDelivered = shipCost * dr;
       var rtoImpact = rtoCost * (1 - dr);
-
-      // GST calculations per order
       var gstOut = deliveredRev * outputGst;
       var gstIn = ((prodCostDelivered + shipCostDelivered) * inputGst) + (cpa * inputGst);
       var netGst = gstOut - gstIn;
-
-      // Profit calculations per order
       var profitExGst = deliveredRev - prodCostDelivered - shipCostDelivered - cpa - rtoImpact;
       var profitIncGst = profitExGst + netGst;
-
-      // Aggregate calculations
       var deliveredOrders = orderCount * dr;
       var totalDeliveredRevenue = deliveredRev * orderCount;
       var totalProfitExGst = profitExGst * orderCount;
       var totalProfitIncGst = profitIncGst * orderCount;
 
-      // Display result
       var resultText =
-        'Orders Received: ' + orderCount + '\n' +
-        'Delivered Orders: ' + deliveredOrders.toFixed(0) + '\n' +
-        'AOV (₹): ' + aov.toFixed(2) + '\n' +
-        'Delivered Revenue (per order): ₹' + deliveredRev.toFixed(2) + '\n' +
-        'Total Delivered Revenue: ₹' + totalDeliveredRevenue.toFixed(2) + '\n' +
-        'GST Out (per order): ₹' + gstOut.toFixed(2) + '\n' +
-        'GST In Credits (per order): ₹' + gstIn.toFixed(2) + '\n' +
-        'Net GST (per order): ₹' + netGst.toFixed(2) + '\n' +
-        'RTO Cost Impact (per order): ₹' + rtoImpact.toFixed(2) + '\n' +
-        'Profit excl. GST (per order): ₹' + profitExGst.toFixed(2) + '\n' +
-        'Profit incl. GST (per order): ₹' + profitIncGst.toFixed(2) + '\n' +
-        'Total Profit excl. GST: ₹' + totalProfitExGst.toFixed(2) + '\n' +
+        'Orders Received: ' + orderCount + '\\n' +
+        'Delivered Orders: ' + deliveredOrders.toFixed(0) + '\\n' +
+        'AOV (₹): ' + aov.toFixed(2) + '\\n' +
+        'Delivered Revenue (per order): ₹' + deliveredRev.toFixed(2) + '\\n' +
+        'Total Delivered Revenue: ₹' + totalDeliveredRevenue.toFixed(2) + '\\n' +
+        'GST Out (per order): ₹' + gstOut.toFixed(2) + '\\n' +
+        'GST In Credits (per order): ₹' + gstIn.toFixed(2) + '\\n' +
+        'Net GST (per order): ₹' + netGst.toFixed(2) + '\\n' +
+        'RTO Cost Impact (per order): ₹' + rtoImpact.toFixed(2) + '\\n' +
+        'Profit excl. GST (per order): ₹' + profitExGst.toFixed(2) + '\\n' +
+        'Profit incl. GST (per order): ₹' + profitIncGst.toFixed(2) + '\\n' +
+        'Total Profit excl. GST: ₹' + totalProfitExGst.toFixed(2) + '\\n' +
         'Total Profit incl. GST: ₹' + totalProfitIncGst.toFixed(2);
 
       document.getElementById('result').textContent = resultText;
     });
   </script>
-
 </body>
 </html>
