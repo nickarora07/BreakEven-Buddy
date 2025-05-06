@@ -1,119 +1,72 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nick Arora's Profitability Calculator (India D2C)</title>
-  <style>
-    body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; line-height: 1.5; }
-    h1 { font-size: 1.5em; margin-bottom: 20px; }
-    label { display: block; margin-bottom: 10px; }
-    input[type="number"] { width: 100%; padding: 6px; box-sizing: border-box; }
-    .flex-row { display: flex; gap: 16px; }
-    .flex-item { flex: 1; }
-    button { margin-top: 20px; padding: 10px 20px; font-size: 1em; cursor: pointer; }
-    #result { margin-top: 20px; padding: 12px; background-color: #e6ffe6; border-radius: 4px; font-weight: bold; white-space: pre-line; }
-  </style>
-</head>
-<body>
+# India D2C Profitability Calculator (Custom GPT Logic)
 
-  <h1>Nick Arora's Profitability Calculator (India D2C)</h1>
+def calculate_d2c_profit(
+    aov,
+    orders_received,
+    delivery_rate,
+    product_cost,
+    shipping_cost,
+    rto_cost,
+    cpa,
+    output_gst_rate,
+    input_gst_product_rate
+):
+    # Core Calculations
+    delivered_orders = int(orders_received * (delivery_rate / 100))
+    rto_orders = orders_received - delivered_orders
 
-  <!-- Inputs -->
-  <div class="flex-row">
-    <div class="flex-item">
-      <label>AOV (₹)
-        <input id="aov" type="number" value="450" />
-      </label>
-      <label>Delivery Rate (%)
-        <input id="deliveryRate" type="number" value="70" />
-      </label>
-      <label>RTO Cost per Order (₹)
-        <input id="rtoCost" type="number" value="40" />
-      </label>
-    </div>
-    <div class="flex-item">
-      <label>Product Cost per Order (₹)
-        <input id="prodCost" type="number" value="56" />
-      </label>
-      <label>Shipping Cost per Order (₹)
-        <input id="shipCost" type="number" value="100" />
-      </label>
-      <label>CPA (₹)
-        <input id="cpa" type="number" value="100" />
-      </label>
-    </div>
-  </div>
+    gross_revenue = delivered_orders * aov
+    output_gst = gross_revenue * (output_gst_rate / 100)
+    net_revenue = gross_revenue - output_gst
 
-  <div class="flex-row">
-    <div class="flex-item">
-      <label>Output GST Rate (%)
-        <input id="outputGst" type="number" value="12" />
-      </label>
-    </div>
-    <div class="flex-item">
-      <label>Input GST Rate (%)
-        <input id="inputGst" type="number" value="18" />
-      </label>
-    </div>
-  </div>
+    total_product_cost = delivered_orders * product_cost
+    total_shipping_cost = delivered_orders * shipping_cost
+    total_rto_cost = rto_orders * rto_cost
+    total_cpa = orders_received * cpa
 
-  <div class="flex-row">
-    <div class="flex-item">
-      <label>Orders Received
-        <input id="orderCount" type="number" value="100" />
-      </label>
-    </div>
-  </div>
+    # Updated Input GST Credit logic
+    input_gst_credit = (
+        total_product_cost * (input_gst_product_rate / 100) +
+        total_shipping_cost * 0.18 +
+        total_cpa * 0.18
+    )
 
-  <button id="calcBtn">Calculate Profit</button>
+    gst_payable = output_gst - input_gst_credit
 
-  <!-- Results -->
-  <div id="result"></div>
+    total_expense = total_product_cost + total_shipping_cost + total_rto_cost + total_cpa + gst_payable
+    net_profit = net_revenue - total_expense
 
-  <script>
-    document.getElementById('calcBtn').addEventListener('click', function() {
-      var aov = parseFloat(document.getElementById('aov').value) || 0;
-      var dr = (parseFloat(document.getElementById('deliveryRate').value) || 0) / 100;
-      var rtoCost = parseFloat(document.getElementById('rtoCost').value) || 0;
-      var prodCost = parseFloat(document.getElementById('prodCost').value) || 0;
-      var shipCost = parseFloat(document.getElementById('shipCost').value) || 0;
-      var cpa = parseFloat(document.getElementById('cpa').value) || 0;
-      var outputGst = (parseFloat(document.getElementById('outputGst').value) || 0) / 100;
-      var inputGst = (parseFloat(document.getElementById('inputGst').value) || 0) / 100;
-      var orderCount = parseFloat(document.getElementById('orderCount').value) || 0;
+    profit_per_delivered_order = net_profit / delivered_orders if delivered_orders > 0 else 0
 
-      var deliveredRev = aov * dr;
-      var prodCostDelivered = prodCost * dr;
-      var shipCostDelivered = shipCost * dr;
-      var rtoImpact = rtoCost * (1 - dr);
-      var gstOut = deliveredRev * outputGst;
-      var gstIn = ((prodCostDelivered + shipCostDelivered) * inputGst) + (cpa * inputGst);
-      var netGst = gstOut - gstIn;
-      var profitExGst = deliveredRev - prodCostDelivered - shipCostDelivered - cpa - rtoImpact;
-      var profitIncGst = profitExGst + netGst;
-      var deliveredOrders = orderCount * dr;
-      var totalDeliveredRevenue = deliveredRev * orderCount;
-      var totalProfitExGst = profitExGst * orderCount;
-      var totalProfitIncGst = profitIncGst * orderCount;
+    return {
+        "Delivered Orders": delivered_orders,
+        "RTO Orders": rto_orders,
+        "Gross Revenue (incl GST)": gross_revenue,
+        "Output GST": output_gst,
+        "Net Revenue (excl GST)": net_revenue,
+        "Total Product Cost": total_product_cost,
+        "Total Shipping Cost": total_shipping_cost,
+        "Total RTO Cost": total_rto_cost,
+        "Total CPA": total_cpa,
+        "Input GST Credit": input_gst_credit,
+        "GST Payable": gst_payable,
+        "Total Expenses": total_expense,
+        "Net Profit": net_profit,
+        "Profit per Delivered Order": profit_per_delivered_order
+    }
 
-      var resultText =
-        'Orders Received: ' + orderCount + '\\n' +
-        'Delivered Orders: ' + deliveredOrders.toFixed(0) + '\\n' +
-        'AOV (₹): ' + aov.toFixed(2) + '\\n' +
-        'Delivered Revenue (per order): ₹' + deliveredRev.toFixed(2) + '\\n' +
-        'Total Delivered Revenue: ₹' + totalDeliveredRevenue.toFixed(2) + '\\n' +
-        'GST Out (per order): ₹' + gstOut.toFixed(2) + '\\n' +
-        'GST In Credits (per order): ₹' + gstIn.toFixed(2) + '\\n' +
-        'Net GST (per order): ₹' + netGst.toFixed(2) + '\\n' +
-        'RTO Cost Impact (per order): ₹' + rtoImpact.toFixed(2) + '\\n' +
-        'Profit excl. GST (per order): ₹' + profitExGst.toFixed(2) + '\\n' +
-        'Profit incl. GST (per order): ₹' + profitIncGst.toFixed(2) + '\\n' +
-        'Total Profit excl. GST: ₹' + totalProfitExGst.toFixed(2) + '\\n' +
-        'Total Profit incl. GST: ₹' + totalProfitIncGst.toFixed(2);
+# Example test run
+example = calculate_d2c_profit(
+    aov=450,
+    orders_received=100,
+    delivery_rate=70,
+    product_cost=56,
+    shipping_cost=100,
+    rto_cost=40,
+    cpa=100,
+    output_gst_rate=12,
+    input_gst_product_rate=18
+)
 
-      document.getElementById('result').textContent = resultText;
-    });
-  </script>
-</body>
-</html>
+for key, value in example.items():
+    print(f"{key}: ₹{value:,.2f}" if isinstance(value, (int, float)) else f"{key}: {value}")
