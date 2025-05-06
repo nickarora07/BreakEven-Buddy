@@ -32,7 +32,6 @@ def calculate_d2c_profit(
     )
 
     gst_payable = output_gst - input_gst_credit
-
     total_expense = total_product_cost + total_shipping_cost + total_rto_cost + total_cpa + gst_payable
     net_profit = net_revenue - total_expense
 
@@ -55,18 +54,19 @@ def calculate_d2c_profit(
         "Profit per Delivered Order": profit_per_delivered_order
     }
 
-# Example test run
-example = calculate_d2c_profit(
-    aov=450,
-    orders_received=100,
-    delivery_rate=70,
-    product_cost=56,
-    shipping_cost=100,
-    rto_cost=40,
-    cpa=100,
-    output_gst_rate=12,
-    input_gst_product_rate=18
-)
+# Example usage
+if __name__ == "__main__":
+    results = calculate_d2c_profit(
+        aov=499,
+        orders_received=120,
+        delivery_rate=75,
+        product_cost=65,
+        shipping_cost=90,
+        rto_cost=45,
+        cpa=110,
+        output_gst_rate=12,
+        input_gst_product_rate=18
+    )
 
-for key, value in example.items():
-    print(f"{key}: ₹{value:,.2f}" if isinstance(value, (int, float)) else f"{key}: {value}")
+    for key, value in results.items():
+        print(f"{key}: ₹{value:,.2f}")
