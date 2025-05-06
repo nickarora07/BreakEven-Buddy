@@ -1,152 +1,111 @@
-# Repository: india-d2c-profit-calculator
-
-This repository contains a simple static webpage for calculating profitability of an Indian D2C business.
-
-## Files
-
-- `index.html`: The calculator UI and logic.
-- `README.md`: This guide and deployment instructions.
-
----
-
-## README.md
-```markdown
-# India D2C Profitability Calculator
-
-A static HTML/JS profit calculator for Indian D2C brands. Calculates delivered vs. RTO orders, GST, total costs, and net profit.
-
-## Usage
-
-1. Clone this repo:
-   ```bash
-   git clone https://github.com/<your-username>/india-d2c-profit-calculator.git
-   cd india-d2c-profit-calculator
-   ```
-2. Open `index.html` in your browser:
-   ```bash
-   open index.html  # macOS
-   # or drag into Chrome/Firefox
-   ```
-3. Enter your business metrics and click **Calculate Profit**.
-
-## Deploy on GitHub Pages
-
-1. Create a new repository on GitHub named `india-d2c-profit-calculator`.
-2. Push your local code:
-   ```bash
-   git remote add origin https://github.com/<your-username>/india-d2c-profit-calculator.git
-   git push -u origin main
-   ```
-3. In GitHub repo settings > Pages, set source to `main` branch and `/ (root)` folder.
-4. Your site will be live at: `https://<your-username>.github.io/india-d2c-profit-calculator/`
-
-## License
-MIT License
-```
-
----
-
-## index.html
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>India D2C Profitability Calculator</title>
   <style>
-    body { font-family: Arial, sans-serif; max-width: 900px; margin: 2rem auto; padding: 1rem; line-height: 1.5; }
-    h1 { text-align: center; margin-bottom: 1rem; }
-    .container { display: flex; flex-wrap: wrap; gap: 2rem; }
-    #calculator-form, #results, #logic { flex: 1; min-width: 300px; }
-    .input-group { margin-bottom: 1rem; }
-    label { display: block; margin-bottom: 0.25rem; font-weight: bold; }
-    input { width: 100%; padding: 0.5rem; font-size: 1rem; border: 1px solid #ccc; border-radius: 4px; }
-    button { padding: 0.75rem 1.5rem; font-size: 1rem; background: #007BFF; color: white; border: none; border-radius: 4px; cursor: pointer; }
-    button:hover { background: #0056b3; }
-    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-    th, td { border: 1px solid #ddd; padding: 0.75rem; text-align: right; }
-    th { background-color: #f4f4f4; text-align: left; }
-    #results h2, #logic h2 { margin-top: 0; }
-    #logic { margin-top: 2rem; }
-    #logic ul { list-style: none; padding: 0; }
-    #logic li { margin-bottom: 0.5rem; }
-    .formula { font-family: monospace; background: #f9f9f9; padding: 0.25rem 0.5rem; border-radius: 4px; }
+    body { font-family: sans-serif; padding: 1rem; }
+    .container { display: flex; gap: 2rem; flex-wrap: wrap; }
+    .panel { flex: 1; min-width: 300px; }
+    .panel h3 { margin-top: 0; }
+    .panel input { width: 100%; padding: .5rem; margin: .25rem 0; }
+    #results table { width: 100%; border-collapse: collapse; }
+    #results th, #results td { padding: .5rem; border: 1px solid #ddd; text-align: right; }
+    #results th { background: #f4f4f4; text-align: left; }
   </style>
 </head>
 <body>
+
   <h1>India D2C Profitability Calculator</h1>
   <div class="container">
-    <!-- Input Form -->
-    <div id="calculator-form">
-      <div class="input-group"><label for="aov">AOV (₹)</label><input type="number" id="aov" value="450"></div>
-      <div class="input-group"><label for="orders">Orders Received</label><input type="number" id="orders" value="100"></div>
-      <div class="input-group"><label for="deliveryRate">Delivery Rate (%)</label><input type="number" id="deliveryRate" value="70"></div>
-      <div class="input-group"><label for="productCost">Product Cost per Delivered Order (₹)</label><input type="number" id="productCost" value="56"></div>
-      <div class="input-group"><label for="shippingCost">Shipping Cost per Delivered Order (₹)</label><input type="number" id="shippingCost" value="100"></div>
-      <div class="input-group"><label for="rtoCost">RTO Cost per RTO Order (₹)</label><input type="number" id="rtoCost" value="40"></div>
-      <div class="input-group"><label for="cpa">CPA (₹)</label><input type="number" id="cpa" value="100"></div>
-      <div class="input-group"><label for="outputGstRate">Output GST Rate (%)</label><input type="number" id="outputGstRate" value="12"></div>
-      <div class="input-group"><label for="inputGstProductRate">Input GST Rate on Product Cost (%)</label><input type="number" id="inputGstProductRate" value="18"></div>
-      <button onclick="calculateProfit()">Calculate Profit</button>
+
+    <!-- INPUT PANEL -->
+    <div class="panel" id="inputs">
+      <h3>Inputs</h3>
+      <input type="number" id="aov"           placeholder="AOV (₹)"                       value="450">
+      <input type="number" id="orders"        placeholder="Orders Received"             value="100">
+      <input type="number" id="deliveryRate"  placeholder="Delivery Rate (%)"           value="70">
+      <input type="number" id="productCost"   placeholder="Product Cost per Delivered Order (₹)" value="56">
+      <input type="number" id="shippingCost"  placeholder="Shipping Cost per Delivered Order (₹)" value="100">
+      <input type="number" id="rtoCost"       placeholder="RTO Cost per Undelivered Order (₹)"    value="40">
+      <input type="number" id="cpa"           placeholder="CPA (₹)"                       value="100">
+      <input type="number" id="outputGst"     placeholder="Output GST Rate (%)"         value="12">
+      <input type="number" id="inputGstProd"  placeholder="Input GST on Product (%)"    value="18">
+      <button id="calculate-btn" style="margin-top:1rem; padding:.5rem 1rem;">Calculate Profit</button>
     </div>
 
-    <!-- Results Table -->
-    <div id="results">
-      <h2>Results</h2>
-      <table>
-        <thead><tr><th>Metric</th><th>Value</th></tr></thead>
-        <tbody><tr><td colspan="2" style="text-align:center;">Run calculation to see results</td></tr></tbody>
-      </table>
+    <!-- RESULTS PANEL -->
+    <div class="panel" id="results">
+      <h3>Results</h3>
+      <div id="result-table">Run a calculation to see results here.</div>
     </div>
-  </div>
 
-  <!-- Calculation Logic Explanation -->
-  <div id="logic">
-    <h2>Calculation Logic</h2>
-    <ul>
-      <li><strong>Delivered Orders:</strong> <span class="formula">Math.floor(Orders × DeliveryRate/100)</span></li>
-      <li><strong>RTO Orders:</strong> <span class="formula">Orders − DeliveredOrders</span></li>
-      <li><strong>Gross Revenue (incl GST):</strong> <span class="formula">DeliveredOrders × AOV</span></li>
-      <li><strong>Output GST:</strong> <span class="formula">GrossRevenue × OutputGSTRate/100</span></li>
-      <li><strong>Net Revenue (excl GST):</strong> <span class="formula">GrossRevenue − OutputGST</span></li>
-      <li><strong>Total Product Cost:</strong> <span class="formula">DeliveredOrders × ProductCost</span></li>
-      <li><strong>Total Shipping Cost:</strong> <span class="formula">DeliveredOrders × ShippingCost</span></li>
-      <li><strong>Total RTO Cost:</strong> <span class="formula">RTOOrders × RTOCost</span></li>
-      <li><strong>Total CPA Cost:</strong> <span class="formula">Orders × CPA</span></li>
-      <li><strong>Input GST Credit:</strong> <span class="formula">(TotalProductCost × InputGSTRate/100) + (TotalShippingCost × 0.18) + (TotalCPACost × 0.18)</span></li>
-      <li><strong>GST Payable:</strong> <span class="formula">OutputGST − InputGSTCredit</span></li>
-      <li><strong>Total Expenses:</strong> <span class="formula">ProductCost + ShippingCost + RTOCost + CPACost + GSTPayable</span></li>
-      <li><strong>Net Profit:</strong> <span class="formula">NetRevenue − TotalExpenses</span></li>
-      <li><strong>Profit per Delivered Order:</strong> <span class="formula">NetProfit / DeliveredOrders</span></li>
-    </ul>
   </div>
 
   <script>
-    function formatINR(num) {
-      return '₹' + num.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    }
-    
+    // Main calculation function
     function calculateProfit() {
-      // Fetch inputs
-      const orders = parseInt(document.getElementById('orders').value) || 0;
+      // read inputs
+      const aov          = parseFloat(document.getElementById('aov').value) || 0;
+      const orders       = parseFloat(document.getElementById('orders').value) || 0;
       const deliveryRate = parseFloat(document.getElementById('deliveryRate').value) || 0;
-      const aov = parseFloat(document.getElementById('aov').value) || 0;
-      const productCost = parseFloat(document.getElementById('productCost').value) || 0;
-      const shippingCost = parseFloat(document.getElementById('shippingCost').value) || 0;
-      const rtoCost = parseFloat(document.getElementById('rtoCost').value) || 0;
-      const cpa = parseFloat(document.getElementById('cpa').value) || 0;
-      const outputGstRate = parseFloat(document.getElementById('outputGstRate').value) || 0;
-      const inputGstProductRate = parseFloat(document.getElementById('inputGstProductRate').value) || 0;
+      const prodCost     = parseFloat(document.getElementById('productCost').value) || 0;
+      const shipCost     = parseFloat(document.getElementById('shippingCost').value) || 0;
+      const rtoCost      = parseFloat(document.getElementById('rtoCost').value) || 0;
+      const cpa          = parseFloat(document.getElementById('cpa').value) || 0;
+      const outGstRate   = parseFloat(document.getElementById('outputGst').value) || 0;
+      const inGstProd    = parseFloat(document.getElementById('inputGstProd').value) || 0;
 
-      // Calculations
-      const delivered = Math.floor(orders * (deliveryRate / 100));              // Delivered Orders
-      const rto = orders - delivered;                                           // RTO Orders
-      const grossRevenue = delivered * aov;                                      // Gross Revenue incl GST
-      const outputGst = grossRevenue * (outputGstRate / 100);                    // Output GST
-      const netRevenue = grossRevenue - outputGst;                               // Net Revenue excl GST
-      const totalProduct = delivered * productCost;                              // Product Cost
-      const totalShipping = delivered * shippingCost;                            // Shipping Cost
-      const totalRto = rto * rtoCost;                                            // RTO Cost
-      const totalCpa = orders * cpa;                                             // CPA Cost
-      const inputGstCredit =                                                         
+      // core logic
+      const delivered   = Math.round(orders * (deliveryRate / 100));
+      const rtoOrders   = orders - delivered;
+      const grossRev    = delivered * aov;
+      const outGst      = grossRev * (outGstRate / 100);
+      const netRev      = grossRev - outGst;
+      const totalProd   = delivered * prodCost;
+      const totalShip   = delivered * shipCost;
+      const totalRTO    = rtoOrders * rtoCost;
+      const totalCPA    = orders * cpa;
+      // updated input-GST: product @ custom rate, shipping & CPA @18%
+      const inGstCredit = (totalProd * (inGstProd / 100)) + (totalShip * 0.18) + (totalCPA * 0.18);
+      const gstPayable  = outGst - inGstCredit;
+      const totalCost   = totalProd + totalShip + totalRTO + totalCPA + gstPayable;
+      const netProfit   = netRev - totalCost;
+      const profitPer  = delivered ? (netProfit / delivered) : 0;
+
+      // build an HTML table
+      const rows = [
+        ['Delivered Orders', delivered],
+        ['RTO Orders', rtoOrders],
+        ['Gross Revenue (incl. GST)', grossRev.toFixed(2)],
+        ['Output GST', outGst.toFixed(2)],
+        ['Net Revenue (excl. GST)', netRev.toFixed(2)],
+        ['Total Product Cost', totalProd.toFixed(2)],
+        ['Total Shipping Cost', totalShip.toFixed(2)],
+        ['Total RTO Cost', totalRTO.toFixed(2)],
+        ['Total CPA Cost', totalCPA.toFixed(2)],
+        ['Input GST Credit', inGstCredit.toFixed(2)],
+        ['GST Payable', gstPayable.toFixed(2)],
+        ['Total Cost', totalCost.toFixed(2)],
+        ['Net Profit', netProfit.toFixed(2)],
+        ['Profit per Delivered Order', profitPer.toFixed(2)]
+      ];
+
+      let html = '<table><thead><tr><th>Metric</th><th>Value (₹)</th></tr></thead><tbody>';
+      rows.forEach(([label, val]) => {
+        html += `<tr><td>${label}</td><td style="text-align:right;">${val.toLocaleString()}</td></tr>`;
+      });
+      html += '</tbody></table>';
+
+      document.getElementById('result-table').innerHTML = html;
+    }
+
+    // wire up the button after DOM loads
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('calculate-btn').addEventListener('click', calculateProfit);
+    });
+  </script>
+
+</body>
+</html>
